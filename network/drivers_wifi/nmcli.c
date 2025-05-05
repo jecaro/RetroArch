@@ -20,6 +20,8 @@
 #include <string/stdstring.h>
 #include <retro_miscellaneous.h>
 #include <string.h>
+#include <unistd.h>
+#include <wait.h>
 
 #include <libretro.h>
 
@@ -157,7 +159,7 @@ static bool nmcli_connect_ssid(void *data,
       const wifi_network_info_t *netinfo)
 {
    nmcli_t *nmcli = (nmcli_t*)data;
-   char cmd[256];
+   pid_t pid = -1;
    int ret = 0;
    unsigned int i = 0;
    bool saved_password = false;
@@ -166,15 +168,17 @@ static bool nmcli_connect_ssid(void *data,
    if (!nmcli || !netinfo)
       return false;
 
-   if (netinfo->saved_password)
-      snprintf(cmd, sizeof(cmd), "nmcli connection up '%s'", netinfo->ssid);
-   else
-      /* This assumes the password and ssid don't contain single quotes */
-      snprintf(cmd, sizeof(cmd),
-            "nmcli dev wifi connect '%s' password '%s'",
-            netinfo->ssid, netinfo->passphrase);
+   pid = fork();
+   if (pid == 0) {
+      if (netinfo->saved_password)
+         execlp("nmcli", "nmcli", "connection", "up", netinfo->ssid, NULL);
+      else
+         execlp("nmcli", "nmcli", "dev", "wifi",
+               "connect", netinfo->ssid,
+               "password", netinfo->passphrase, NULL);
+   }
 
-   ret = system(cmd);
+   waitpid(pid, &ret, 0);
    connected = WIFEXITED(ret) && WEXITSTATUS(ret) == 0;
 
    for (i = 0; i < RBUF_LEN(nmcli->scan.net_list); i++)
