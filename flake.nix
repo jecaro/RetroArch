@@ -1,7 +1,7 @@
-# ./configure --disable-update_cores --disable-builtinmbedtls --enable-systemmbedtls --disable-builtinzlib --disable-builtinflac --disable-update_assets --disable-update_core_info --enable-dbus --enable-egl --enable-kms --enable-wifi
+# ./configure --disable-update_cores --disable-builtinmbedtls --enable-systemmbedtls --disable-builtinzlib --disable-update_assets --disable-update_core_info --enable-dbus --enable-egl --enable-kms --enable-wifi
 
 {
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
   outputs = { self, nixpkgs }:
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
@@ -25,17 +25,17 @@
               pkgs.libv4l
               pkgs.libxkbcommon
               pkgs.libxml2
-              pkgs.mbedtls_2
+              pkgs.mbedtls
               pkgs.mesa
               pkgs.pkg-config
               pkgs.python3
               pkgs.qt5.qtbase
               pkgs.spirv-tools
               pkgs.udev
-              pkgs.xorg.libX11
-              pkgs.xorg.libXdmcp
-              pkgs.xorg.libXext
-              pkgs.xorg.libXxf86vm
+              pkgs.libX11
+              pkgs.libXdmcp
+              pkgs.libXext
+              pkgs.libXxf86vm
               pkgs.zlib
             ];
         };
